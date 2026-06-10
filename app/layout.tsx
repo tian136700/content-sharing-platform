@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Noto_Serif_SC, Source_Sans_3 } from "next/font/google";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import "./globals.css";
 
@@ -42,9 +40,7 @@ export default function RootLayout({
       className={`${notoSerif.variable} ${sourceSans.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-slate-950 font-sans text-slate-200 antialiased">
-        <Header />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        {children}
       </body>
     </html>
   );

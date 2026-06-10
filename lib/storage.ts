@@ -152,6 +152,71 @@ export async function insertArticle(
   return article;
 }
 
+function rowToVisitLog(row: Record<string, unknown>): VisitLog {
+  return {
+    id: row.id as string,
+    ip: row.ip as string,
+    country: row.country as string,
+    region: row.region as string,
+    city: row.city as string,
+    page: row.page as string,
+    articleId: (row.article_id as string | null) ?? undefined,
+    userAgent: (row.user_agent as string | null) ?? undefined,
+    timestamp: row.timestamp as string,
+  };
+}
+
+function rowToFeedback(row: Record<string, unknown>): FeedbackEntry {
+  return {
+    id: row.id as string,
+    email: row.email as string,
+    content: row.content as string,
+    ip: row.ip as string,
+    country: row.country as string,
+    region: row.region as string,
+    city: row.city as string,
+    timestamp: row.timestamp as string,
+  };
+}
+
+const ADMIN_LIST_LIMIT = 500;
+
+export async function getVisitLogsFromDB(
+  limit = ADMIN_LIST_LIMIT
+): Promise<VisitLog[]> {
+  const db = await getDB();
+  if (!db) {
+    return [...visitLogs]
+      .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+      .slice(0, limit);
+  }
+
+  const { results } = await db
+    .prepare("SELECT * FROM visit_logs ORDER BY timestamp DESC LIMIT ?")
+    .bind(limit)
+    .all<Record<string, unknown>>();
+
+  return results.map(rowToVisitLog);
+}
+
+export async function getFeedbackFromDB(
+  limit = ADMIN_LIST_LIMIT
+): Promise<FeedbackEntry[]> {
+  const db = await getDB();
+  if (!db) {
+    return [...feedbackEntries]
+      .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+      .slice(0, limit);
+  }
+
+  const { results } = await db
+    .prepare("SELECT * FROM feedback ORDER BY timestamp DESC LIMIT ?")
+    .bind(limit)
+    .all<Record<string, unknown>>();
+
+  return results.map(rowToFeedback);
+}
+
 /** Debug helper — only for development */
 export function getMockStats() {
   return {
