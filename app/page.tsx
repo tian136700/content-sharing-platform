@@ -8,6 +8,8 @@ import {
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import ResearchLibrary from "@/components/ResearchLibrary";
 
+export const runtime = "edge";
+
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
