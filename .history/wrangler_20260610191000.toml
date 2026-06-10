@@ -11,7 +11,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "csp-db"
-database_id = "26ef305c-5cf9-48aa-9a2f-6c37a894b803"
+database_id = "YOUR_D1_DATABASE_ID"
 migrations_dir = "migrations"
 
 [vars]
