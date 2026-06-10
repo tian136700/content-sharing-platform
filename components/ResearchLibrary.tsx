@@ -11,18 +11,20 @@ import DisclaimerModal from "./DisclaimerModal";
 interface ResearchLibraryProps {
   categories: Category[];
   articles: Article[];
-  initialArticleId?: string;
 }
 
 export default function ResearchLibrary({
   categories,
   articles,
-  initialArticleId,
 }: ResearchLibraryProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const defaultArticleId = initialArticleId ?? articles[0]?.id ?? null;
+  const articleParam = searchParams.get("article");
+  const defaultArticleId =
+    articleParam && articles.some((a) => a.id === articleParam)
+      ? articleParam
+      : (articles[0]?.id ?? null);
   const [selectedId, setSelectedId] = useState<string | null>(defaultArticleId);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(

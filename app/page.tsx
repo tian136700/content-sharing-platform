@@ -1,14 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import {
-  getAllArticles,
-  getAllCategories,
-  getArticleById,
-} from "@/lib/articles";
+import { getAllArticles, getAllCategories } from "@/lib/articles";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import ResearchLibrary from "@/components/ResearchLibrary";
-
-export const runtime = "edge";
 
 export const revalidate = 3600;
 
@@ -22,19 +16,9 @@ export const metadata: Metadata = {
   },
 };
 
-interface HomeProps {
-  searchParams: Promise<{ article?: string }>;
-}
-
-export default async function Home({ searchParams }: HomeProps) {
-  const params = await searchParams;
+export default function Home() {
   const categories = getAllCategories();
   const articles = getAllArticles();
-
-  const initialArticleId =
-    params.article && getArticleById(params.article)
-      ? params.article
-      : articles[0]?.id;
 
   return (
     <Suspense
@@ -44,11 +28,7 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       }
     >
-      <ResearchLibrary
-        categories={categories}
-        articles={articles}
-        initialArticleId={initialArticleId}
-      />
+      <ResearchLibrary categories={categories} articles={articles} />
     </Suspense>
   );
 }
