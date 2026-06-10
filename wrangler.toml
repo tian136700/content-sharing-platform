@@ -1,22 +1,18 @@
-# Cloudflare Pages / Workers configuration
-# Docs: https://developers.cloudflare.com/pages/framework-guides/nextjs/
+# Cloudflare Pages configuration
+# Docs: https://developers.cloudflare.com/pages/functions/wrangler-configuration/
 
 name = "content-sharing-platform"
 pages_build_output_dir = ".vercel/output/static"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
-# Uncomment and configure when connecting KV or D1:
-#
-# [[kv_namespaces]]
-# binding = "VISIT_LOGS_KV"
-# id = "your-kv-namespace-id"
-#
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "csp-db"
-# database_id = "your-d1-database-id"
+# D1 database binding (managed via wrangler.toml — UI bindings are locked)
+# Find database_id: Cloudflare Dashboard → D1 → csp-db → 概览/Overview
+[[d1_databases]]
+binding = "DB"
+database_name = "csp-db"
+database_id = "YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
 
 [vars]
-# Non-secret vars can go here. Use Cloudflare dashboard for secrets.
-# NEXT_PUBLIC_SITE_URL = "https://your-domain.com"
+NEXT_PUBLIC_SITE_URL = "https://pursuing-justice.com"

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://pursuing-justice.com"
   ),
   robots: { index: true, follow: true },
 };

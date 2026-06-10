@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Article, Category } from "@/types";
-import { searchArticles } from "@/lib/articles";
+import { searchArticles } from "@/lib/article-utils";
 import ArticleSidebar from "./ArticleSidebar";
 import ArticleContent from "./ArticleContent";
 import DisclaimerModal from "./DisclaimerModal";
@@ -13,31 +13,48 @@ interface ResearchLibraryProps {
   articles: Article[];
 }
 
+function resolveArticleId(
+  articles: Article[],
+  articleParam: string | null
+): string | null {
+  if (articleParam && articles.some((a) => a.id === articleParam)) {
+    return articleParam;
+  }
+  return articles[0]?.id ?? null;
+}
+
 export default function ResearchLibrary({
   categories,
   articles,
 }: ResearchLibraryProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const initialId = resolveArticleId(articles, null);
 
-  const articleParam = searchParams.get("article");
-  const defaultArticleId =
-    articleParam && articles.some((a) => a.id === articleParam)
-      ? articleParam
-      : (articles[0]?.id ?? null);
-  const [selectedId, setSelectedId] = useState<string | null>(defaultArticleId);
+  const [selectedId, setSelectedId] = useState<string | null>(initialId);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     () => {
       const initial = new Set<string>();
-      const article = articles.find((a) => a.id === defaultArticleId);
+      const article = articles.find((a) => a.id === initialId);
       if (article) initial.add(article.categoryId);
       return initial;
     }
   );
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const articleId = resolveArticleId(articles, params.get("article"));
+    if (!articleId) return;
+
+    setSelectedId(articleId);
+    const article = articles.find((a) => a.id === articleId);
+    if (article) {
+      setExpandedCategories((prev) => new Set(prev).add(article.categoryId));
+    }
+  }, [articles]);
+
   const filteredArticles = useMemo(
-    () => (searchQuery ? searchArticles(searchQuery) : articles),
+    () => (searchQuery ? searchArticles(articles, searchQuery) : articles),
     [searchQuery, articles]
   );
 
@@ -53,11 +70,13 @@ export default function ResearchLibrary({
       if (article) {
         setExpandedCategories((prev) => new Set(prev).add(article.categoryId));
       }
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("article", id);
-      router.replace(`/?${params.toString()}`, { scroll: false });
+      const url = new URL(window.location.href);
+      url.searchParams.set("article", id);
+      router.replace(`${url.pathname}?${url.searchParams.toString()}`, {
+        scroll: false,
+      });
     },
-    [articles, router, searchParams]
+    [articles, router]
   );
 
   const handleToggleCategory = useCallback((categoryId: string) => {

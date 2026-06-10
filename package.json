@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "pages:build": "npx @cloudflare/next-on-pages@1",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate:remote": "wrangler d1 migrations apply csp-db --remote",
+    "db:migrate:local": "wrangler d1 migrations apply csp-db --local"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -17,6 +20,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -24,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4"
   }
 }

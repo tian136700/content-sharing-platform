@@ -1,3 +1,6 @@
+import "server-only";
+
+import { getDB } from "@/lib/cloudflare";
 import type {
   Article,
   FeedbackEntry,
@@ -6,8 +9,7 @@ import type {
 } from "@/types";
 
 // ---------------------------------------------------------------------------
-// Mock in-memory storage (development / placeholder)
-// Replace with Cloudflare KV or D1 in production — see TODO blocks below.
+// In-memory fallback for local development (no D1 binding)
 // ---------------------------------------------------------------------------
 
 const visitLogs: VisitLog[] = [];
@@ -30,29 +32,85 @@ export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function rowToArticle(row: Record<string, unknown>): Article {
+  return {
+    id: row.id as string,
+    categoryId: row.category_id as string,
+    titleZh: row.title_zh as string,
+    titleEn: row.title_en as string,
+    keywords: JSON.parse(row.keywords as string) as string[],
+    abstract: row.abstract as string,
+    introduction: row.introduction as string,
+    scholarUrl: row.scholar_url as string,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+export async function getArticlesFromDB(): Promise<Article[]> {
+  const db = await getDB();
+  if (!db) return getArticles();
+
+  const { results } = await db
+    .prepare("SELECT * FROM articles ORDER BY created_at ASC")
+    .all<Record<string, unknown>>();
+
+  return results.map(rowToArticle);
+}
+
 // ---- Visit Logs ----
 
 export async function saveVisitLog(log: VisitLog): Promise<void> {
+  const db = await getDB();
+  if (db) {
+    await db
+      .prepare(
+        `INSERT INTO visit_logs (id, ip, country, region, city, page, article_id, user_agent, timestamp)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      .bind(
+        log.id,
+        log.ip,
+        log.country,
+        log.region,
+        log.city,
+        log.page,
+        log.articleId ?? null,
+        log.userAgent ?? null,
+        log.timestamp
+      )
+      .run();
+    return;
+  }
+
   visitLogs.push(log);
-
-  // TODO: Cloudflare KV
-  // const kv = getCloudflareKV();
-  // await kv.put(`visit:${log.id}`, JSON.stringify(log));
-  // await kv.put(`visit:idx:${log.timestamp}`, log.id);
-
-  // TODO: Cloudflare D1
-  // await env.DB.prepare(
-  //   `INSERT INTO visit_logs (id, ip, country, region, city, page, article_id, user_agent, timestamp)
-  //    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  // ).bind(log.id, log.ip, log.country, log.region, log.city, log.page, log.articleId ?? null, log.userAgent ?? null, log.timestamp).run();
 }
 
 // ---- Feedback ----
 
 export async function saveFeedback(entry: FeedbackEntry): Promise<void> {
-  feedbackEntries.push(entry);
+  const db = await getDB();
+  if (db) {
+    await db
+      .prepare(
+        `INSERT INTO feedback (id, email, content, ip, country, region, city, timestamp)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      .bind(
+        entry.id,
+        entry.email,
+        entry.content,
+        entry.ip,
+        entry.country,
+        entry.region,
+        entry.city,
+        entry.timestamp
+      )
+      .run();
+    return;
+  }
 
-  // TODO: Cloudflare KV / D1 — same pattern as visit logs
+  feedbackEntries.push(entry);
 }
 
 // ---- Articles ----
@@ -67,19 +125,30 @@ export async function insertArticle(
     updatedAt: new Date().toISOString(),
   };
 
+  const db = await getDB();
+  if (db) {
+    await db
+      .prepare(
+        `INSERT INTO articles (id, category_id, title_zh, title_en, keywords, abstract, introduction, scholar_url, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      .bind(
+        article.id,
+        article.categoryId,
+        article.titleZh,
+        article.titleEn,
+        JSON.stringify(article.keywords),
+        article.abstract,
+        article.introduction,
+        article.scholarUrl,
+        article.createdAt,
+        article.updatedAt
+      )
+      .run();
+    return article;
+  }
+
   articlesStore.push(article);
-
-  // TODO: Cloudflare KV
-  // const kv = getCloudflareKV();
-  // await kv.put(`article:${article.id}`, JSON.stringify(article));
-  // await kv.put(`article:idx:${article.categoryId}:${article.id}`, article.id);
-
-  // TODO: Cloudflare D1
-  // await env.DB.prepare(
-  //   `INSERT INTO articles (id, category_id, title_zh, title_en, keywords, abstract, introduction, scholar_url, created_at, updated_at)
-  //    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  // ).bind(...).run();
-
   return article;
 }
 

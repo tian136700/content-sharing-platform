@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getAllArticles, getAllCategories } from "@/lib/articles";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
@@ -21,14 +20,6 @@ export default function Home() {
   const articles = getAllArticles();
 
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[50vh] items-center justify-center text-slate-500">
-          加载中…
-        </div>
-      }
-    >
-      <ResearchLibrary categories={categories} articles={articles} />
-    </Suspense>
+    <ResearchLibrary categories={categories} articles={articles} />
   );
 }
