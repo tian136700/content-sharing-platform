@@ -1,4 +1,5 @@
 import type { Article } from "@/types";
+import { articleSectionElementId } from "@/lib/article-sections";
 
 interface ArticleContentProps {
   article: Article;
@@ -30,7 +31,10 @@ export default function ArticleContent({ article }: ArticleContentProps) {
         </div>
       </header>
 
-      <section className="mb-10">
+      <section
+        id={articleSectionElementId(article.id, "abstract")}
+        className="mb-10 scroll-mt-24"
+      >
         <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-semibold text-slate-200">
           <span className="inline-block h-5 w-1 rounded-full bg-amber-600" />
           核心摘要
@@ -38,7 +42,10 @@ export default function ArticleContent({ article }: ArticleContentProps) {
         <p className="text-base leading-[1.9] text-slate-300">{article.abstract}</p>
       </section>
 
-      <section className="mb-12">
+      <section
+        id={articleSectionElementId(article.id, "introduction")}
+        className="mb-12 scroll-mt-24"
+      >
         <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-semibold text-slate-200">
           <span className="inline-block h-5 w-1 rounded-full bg-amber-600" />
           引言 / 第一章 精简提炼
@@ -48,7 +55,10 @@ export default function ArticleContent({ article }: ArticleContentProps) {
         </p>
       </section>
 
-      <div className="rounded-xl border border-amber-800/30 bg-gradient-to-r from-amber-950/40 to-slate-900/40 p-6">
+      <div
+        id={articleSectionElementId(article.id, "scholar")}
+        className="scroll-mt-24 rounded-xl border border-amber-800/30 bg-gradient-to-r from-amber-950/40 to-slate-900/40 p-6"
+      >
         <p className="mb-4 text-sm text-slate-400">
           受版权保护，本站仅提供导读索引。如需阅读完整原著，请前往 Google Scholar：
         </p>
