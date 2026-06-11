@@ -1,6 +1,6 @@
 export const SITE_NAME = "儿童保护法律研究平台";
 export const SITE_DESCRIPTION =
-  "非营利性法律研究、学术文献索引与普法导读平台，聚焦儿童未成年人权益保护、性侵案追诉时效改革及刑事责任年龄等领域。";
+  "非营利性儿童保护法律研究平台，聚焦追诉时效改革与取消诉讼时效、延迟披露规则、降低未成年人刑事责任年龄等国际学术文献的中文导读与索引。";
 
 export const DISCLAIMER_STORAGE_KEY = "csp_disclaimer_accepted";
 export const DISCLAIMER_EXPIRY_DAYS = 30;

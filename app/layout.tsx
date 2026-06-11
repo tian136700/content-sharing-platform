@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Serif_SC, Source_Sans_3 } from "next/font/google";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
+import { SITE_NAME } from "@/lib/constants";
+import { HOME_DESCRIPTION } from "@/lib/seo";
 import "./globals.css";
 
 const notoSerif = Noto_Serif_SC({
@@ -22,11 +23,14 @@ export const metadata: Metadata = {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description: SITE_DESCRIPTION,
+  description: HOME_DESCRIPTION,
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://pursuing-justice.com"
   ),
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_SITE_URL ?? "https://pursuing-justice.com",
+  },
 };
 
 export default function RootLayout({

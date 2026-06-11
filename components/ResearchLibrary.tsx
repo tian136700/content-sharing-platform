@@ -14,6 +14,7 @@ import DisclaimerModal from "./DisclaimerModal";
 
 interface ResearchLibraryProps {
   articles: Article[];
+  initialArticleId?: string | null;
 }
 
 function resolveArticleId(
@@ -28,6 +29,7 @@ function resolveArticleId(
 
 export default function ResearchLibrary({
   articles: initialArticles,
+  initialArticleId = null,
 }: ResearchLibraryProps) {
   const router = useRouter();
   const [articles, setArticles] = useState<Article[]>(initialArticles);
@@ -57,7 +59,7 @@ export default function ResearchLibrary({
     };
   }, [initialArticles.length]);
 
-  const initialId = resolveArticleId(articles, null);
+  const initialId = resolveArticleId(articles, initialArticleId);
 
   const [selectedId, setSelectedId] = useState<string | null>(initialId);
   const [activeSection, setActiveSection] = useState<ArticleSectionId | null>(

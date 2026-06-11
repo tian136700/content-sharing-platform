@@ -8,7 +8,14 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: `${SITE_NAME} | 关于与反馈`,
   description:
-    "了解平台愿景与非营利定位，并通过反馈表单与我们取得联系。",
+    "了解儿童保护法律研究平台的愿景与非营利定位，聚焦追诉时效改革、延迟披露规则与降低未成年人刑事责任年龄等议题。",
+  keywords: [
+    "儿童保护",
+    "追诉时效改革",
+    "延迟披露",
+    "降低刑事责任年龄",
+    "法律研究平台",
+  ],
 };
 
 export default function AboutPage() {

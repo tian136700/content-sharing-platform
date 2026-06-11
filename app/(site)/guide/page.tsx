@@ -7,7 +7,15 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} | 检索与翻译指南`,
-  description: "学术文献检索方法与翻译指南，帮助读者高效获取与理解国际儿童保护法律研究文献。",
+  description:
+    "儿童保护法律文献检索与翻译指南，涵盖追诉时效、延迟披露、刑事责任年龄等议题的学术资料获取方法。",
+  keywords: [
+    "儿童保护文献检索",
+    "追诉时效",
+    "延迟披露",
+    "刑事责任年龄",
+    "法律翻译",
+  ],
 };
 
 // Set content here when ready, or load from CMS/KV later
