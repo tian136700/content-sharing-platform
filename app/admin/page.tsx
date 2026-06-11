@@ -1,6 +1,6 @@
 import AdminDashboard from "@/components/admin/AdminDashboard";
-import { getAllArticles } from "@/lib/articles";
 import {
+  getArticlesFromDB,
   getFeedbackFromDB,
   getVisitLogsFromDB,
 } from "@/lib/storage";
@@ -9,12 +9,11 @@ export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const [visits, feedback] = await Promise.all([
+  const [visits, feedback, articles] = await Promise.all([
     getVisitLogsFromDB(),
     getFeedbackFromDB(),
+    getArticlesFromDB(),
   ]);
-
-  const articles = getAllArticles();
   const articleTitles = Object.fromEntries(
     articles.map((article) => [article.id, article.titleZh])
   );

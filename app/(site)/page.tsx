@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getAllArticles, getAllCategories } from "@/lib/articles";
+import { getAllCategories } from "@/lib/articles";
+import { getArticlesFromDB } from "@/lib/storage";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import ResearchLibrary from "@/components/ResearchLibrary";
 
@@ -15,9 +16,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
   const categories = getAllCategories();
-  const articles = getAllArticles();
+  const articles = await getArticlesFromDB();
 
   return (
     <ResearchLibrary categories={categories} articles={articles} />

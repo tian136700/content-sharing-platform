@@ -14,19 +14,6 @@ import type {
 
 const visitLogs: VisitLog[] = [];
 const feedbackEntries: FeedbackEntry[] = [];
-let articlesStore: Article[] = [];
-
-export function initArticlesStore(articles: Article[]) {
-  articlesStore = [...articles];
-}
-
-export function getArticles(): Article[] {
-  return [...articlesStore];
-}
-
-export function getArticleById(id: string): Article | undefined {
-  return articlesStore.find((a) => a.id === id);
-}
 
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -49,7 +36,7 @@ function rowToArticle(row: Record<string, unknown>): Article {
 
 export async function getArticlesFromDB(): Promise<Article[]> {
   const db = await getDB();
-  if (!db) return getArticles();
+  if (!db) return [];
 
   const { results } = await db
     .prepare("SELECT * FROM articles ORDER BY created_at ASC")
@@ -126,29 +113,28 @@ export async function insertArticle(
   };
 
   const db = await getDB();
-  if (db) {
-    await db
-      .prepare(
-        `INSERT INTO articles (id, category_id, title_zh, title_en, keywords, abstract, introduction, scholar_url, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      )
-      .bind(
-        article.id,
-        article.categoryId,
-        article.titleZh,
-        article.titleEn,
-        JSON.stringify(article.keywords),
-        article.abstract,
-        article.introduction,
-        article.scholarUrl,
-        article.createdAt,
-        article.updatedAt
-      )
-      .run();
-    return article;
+  if (!db) {
+    throw new Error("D1 database binding is not available");
   }
 
-  articlesStore.push(article);
+  await db
+    .prepare(
+      `INSERT INTO articles (id, category_id, title_zh, title_en, keywords, abstract, introduction, scholar_url, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      article.id,
+      article.categoryId,
+      article.titleZh,
+      article.titleEn,
+      JSON.stringify(article.keywords),
+      article.abstract,
+      article.introduction,
+      article.scholarUrl,
+      article.createdAt,
+      article.updatedAt
+    )
+    .run();
   return article;
 }
 
@@ -217,11 +203,3 @@ export async function getFeedbackFromDB(
   return results.map(rowToFeedback);
 }
 
-/** Debug helper — only for development */
-export function getMockStats() {
-  return {
-    visitCount: visitLogs.length,
-    feedbackCount: feedbackEntries.length,
-    articleCount: articlesStore.length,
-  };
-}
