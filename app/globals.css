@@ -47,6 +47,15 @@ aside nav::-webkit-scrollbar-thumb {
   border-radius: 2px;
 }
 
+/* Article body: Chinese paragraph typography */
+.article-body p {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: rgb(203 213 225);
+  text-indent: 2em;
+  text-align: justify;
+}
+
 /* Prose overrides for markdown */
 .prose h1,
 .prose h2,

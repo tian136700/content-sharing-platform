@@ -45,6 +45,20 @@ export async function getArticlesFromDB(): Promise<Article[]> {
   return results.map(rowToArticle);
 }
 
+export async function getArticleByScholarUrl(
+  scholarUrl: string
+): Promise<Article | null> {
+  const db = await getDB();
+  if (!db) return null;
+
+  const row = await db
+    .prepare("SELECT * FROM articles WHERE scholar_url = ? LIMIT 1")
+    .bind(scholarUrl)
+    .first<Record<string, unknown>>();
+
+  return row ? rowToArticle(row) : null;
+}
+
 // ---- Visit Logs ----
 
 export async function saveVisitLog(log: VisitLog): Promise<void> {

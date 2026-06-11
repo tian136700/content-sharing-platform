@@ -1,5 +1,6 @@
 import type { Article } from "@/types";
 import { articleSectionElementId } from "@/lib/article-sections";
+import ArticleBodyText from "./ArticleBodyText";
 
 interface ArticleContentProps {
   article: Article;
@@ -39,7 +40,7 @@ export default function ArticleContent({ article }: ArticleContentProps) {
           <span className="inline-block h-5 w-1 rounded-full bg-amber-600" />
           核心摘要
         </h2>
-        <p className="text-base leading-[1.9] text-slate-300">{article.abstract}</p>
+        <ArticleBodyText content={article.abstract} />
       </section>
 
       <section
@@ -50,9 +51,7 @@ export default function ArticleContent({ article }: ArticleContentProps) {
           <span className="inline-block h-5 w-1 rounded-full bg-amber-600" />
           引言 / 第一章 精简提炼
         </h2>
-        <p className="text-base leading-[1.9] text-slate-300">
-          {article.introduction}
-        </p>
+        <ArticleBodyText content={article.introduction} />
       </section>
 
       <div

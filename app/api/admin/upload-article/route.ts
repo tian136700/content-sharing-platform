@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateApiKey } from "@/lib/auth";
-import { insertArticle } from "@/lib/storage";
+import { getArticleByScholarUrl, insertArticle } from "@/lib/storage";
 import type { UploadArticlePayload } from "@/types";
 
 export const runtime = "edge";
@@ -53,6 +53,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const scholarUrl = body.scholarUrl.trim();
+    const existing = await getArticleByScholarUrl(scholarUrl);
+    if (existing) {
+      return NextResponse.json(
+        {
+          error: "Article already exists",
+          articleId: existing.id,
+        },
+        { status: 409 }
+      );
+    }
+
     const article = await insertArticle({
       titleZh: body.titleZh.trim(),
       titleEn: body.titleEn.trim(),
@@ -60,7 +72,7 @@ export async function POST(request: NextRequest) {
       keywords: body.keywords.map((k) => k.trim()).filter(Boolean),
       abstract: body.abstract.trim(),
       introduction: body.introduction.trim(),
-      scholarUrl: body.scholarUrl.trim(),
+      scholarUrl,
     });
 
     return NextResponse.json({ success: true, article }, { status: 201 });
